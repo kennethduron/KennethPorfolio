@@ -327,3 +327,13 @@ body {
 html {
     scroll-padding-top: var(--header-height);
 }
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body.menu-open {
+    overflow: hidden;
+}
