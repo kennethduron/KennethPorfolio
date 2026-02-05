@@ -1,39 +1,51 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Hover opacity effect for all links
-    document.querySelectorAll("a").forEach(link => {
+
+    const burger = document.querySelector(".burger");
+    const navLinks = document.querySelector(".nav-links");
+    const allLinks = document.querySelectorAll("a");
+    const menuLinks = document.querySelectorAll(".nav-links a");
+
+    /* Hover opacity effect */
+    allLinks.forEach(link => {
         link.addEventListener("mouseover", () => link.style.opacity = "0.8");
         link.addEventListener("mouseout", () => link.style.opacity = "1");
     });
 
-    // Smooth scroll for internal links
+    /* Smooth scroll */
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
 
-            // Close mobile menu after click
-            if (window.innerWidth <= 768) {
-                navLinks.classList.remove("active");
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
             }
         });
     });
 
-    // Burger menu toggle
-    const burger = document.querySelector(".burger");
-    const navLinks = document.querySelector(".nav-links");
-
+    /* 🔥 BURGER TOGGLE + BLOQUEAR SCROLL */
     burger.addEventListener("click", () => {
-        navLinks.classList.toggle("active");
         burger.classList.toggle("toggle");
+        navLinks.classList.toggle("active");
+        document.body.classList.toggle("menu-open"); // bloquea scroll lateral
     });
 
-    // Close menu when clicking outside
-    document.addEventListener("click", function (event) {
-        if (!navLinks.contains(event.target) && !burger.contains(event.target)) {
-            navLinks.classList.remove("active");
+    /* 🔥 Cerrar menú al hacer click en links del menú */
+    menuLinks.forEach(link => {
+        link.addEventListener("click", () => {
             burger.classList.remove("toggle");
+            navLinks.classList.remove("active");
+            document.body.classList.remove("menu-open");
+        });
+    });
+
+    /* 🔥 Cerrar menú al hacer click fuera */
+    document.addEventListener("click", (event) => {
+        if (!navLinks.contains(event.target) && !burger.contains(event.target)) {
+            burger.classList.remove("toggle");
+            navLinks.classList.remove("active");
+            document.body.classList.remove("menu-open");
         }
     });
+
 });

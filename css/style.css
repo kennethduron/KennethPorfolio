@@ -25,24 +25,31 @@ body {
     /* 🔥 ESTA LINEA ARREGLA EL BUG */
 }
 
+/* ===== FIXED HEADER ===== */
 
-/* HEADER / NAVIGATION */
 .header {
-    position: sticky;
+    position: fixed;
     top: 0;
-    background: var(--bg);
-    z-index: 100;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border-bottom: 1px solid #e5e7eb;
+    z-index: 1200;
 }
 
+
 .nav {
+    height: 80px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
+    padding: 0 2rem;
     max-width: 1200px;
     margin: auto;
 }
+
 
 .brand {
     font-weight: 700;
@@ -97,10 +104,12 @@ body {
     justify-content: center;
     align-items: center;
     gap: 2rem;
-    padding: 4rem 2rem;
+    padding: 7rem 2rem 4rem;
+    /* 🔥 espacio para header fijo */
     flex-wrap: wrap;
     text-align: center;
 }
+
 
 .hero h1 {
     font-size: 2.5rem;
@@ -325,8 +334,9 @@ body {
 }
 
 html {
-    scroll-padding-top: var(--header-height);
+    scroll-padding-top: 35px;
 }
+
 
 html,
 body {
