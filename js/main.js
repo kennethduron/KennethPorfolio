@@ -48,13 +48,4 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-});
-
-document.getElementById("emailBtn").addEventListener("click", function (e) {
-    setTimeout(() => {
-        window.open(
-            "https://mail.google.com/mail/?view=cm&fs=1&to=kennethduron.paz@gmail.com",
-            "_blank"
-        );
-    }, 500);
-});
+}); 
