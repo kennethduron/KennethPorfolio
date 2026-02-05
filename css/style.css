@@ -21,7 +21,10 @@ body {
     background: var(--bg);
     color: var(--text);
     line-height: 1.7;
+    overflow-x: hidden;
+    /* 🔥 ESTA LINEA ARREGLA EL BUG */
 }
+
 
 /* HEADER / NAVIGATION */
 .header {
