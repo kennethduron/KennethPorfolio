@@ -2,261 +2,214 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kenneth Duron – Portfolio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kenneth Duron | Frontend Developer</title>
     <meta name="description"
-        content="Portfolio of Kenneth Asael Duron Paz — Web Frontend Developer from Honduras. Showcasing professional projects including logistics and jewelry websites, along with skills in HTML, CSS, JavaScript, UI design, and customer-focused digital solutions.">
+        content="Kenneth Duron is a Web Frontend Developer from Honduras. Explore his projects, work experience, education, and skills.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://kennethduron.github.io/KennethPortfolio/">
 
+    <link rel="alternate" hreflang="en" href="index.html">
+    <link rel="alternate" hreflang="es" href="index-es.html">
 
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="./images/kenneth-logo.png">
-    <meta property="og:title" content="Kenneth Duron – Portfolio">
-    <meta property="og:image" content="https://kennethduron.github.io/KennethPortfolio/images/kenneth.jpg">
-    <meta property="og:image:type" content="image/jpeg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://kennethduron.github.io/KennethPortfolio/">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" href="images/kenneth-logo.png">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Kenneth Duron | Frontend Developer">
     <meta property="og:description"
-        content="Explore the portfolio of Kenneth Duron — a Web Frontend Developer specializing in modern UI, responsive design, and high-quality digital experiences.">
+        content="Portfolio of Kenneth Duron — Web Frontend Developer. View projects, work experience, education, and skills.">
+    <meta property="og:image" content="https://kennethduron.github.io/KennethPortfolio/images/kenneth.jpg">
+    <meta property="og:url" content="https://kennethduron.github.io/KennethPortfolio/">
+    <meta property="og:type" content="website">
 
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Kenneth Duron | Frontend Developer">
+    <meta name="twitter:description"
+        content="Portfolio of Kenneth Duron — Web Frontend Developer. View projects, work experience, education, and skills.">
+    <meta name="twitter:image" content="https://kennethduron.github.io/KennethPortfolio/images/kenneth.jpg">
 
-
-
-    <style>
-        :root {
-            --primary: #1A73E8;
-            /* Professional blue */
-            --primary-dark: #0D47A1;
-            /* Deep blue */
-            --gold: #E5C87A;
-            /* Soft gold accent */
-            --bg-dark: #0D1B2A;
-            /* Dark navy */
-            --bg-light: #E5E5E5;
-            /* Light gray */
-            --card-bg: rgba(18, 31, 54, 0.65);
-            /* Transparent dark card */
+    <!-- Schema JSON-LD -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Kenneth Asael Duron Paz",
+            "jobTitle": "Frontend Developer",
+            "url": "https://kennethduron.github.io/KennethPortfolio/",
+            "image": "https://kennethduron.github.io/KennethPortfolio/images/kenneth.jpg",
+            "sameAs": [
+                "https://www.linkedin.com/in/kenneth-asael-durón-paz-5824b32b5"
+            ]
         }
+    </script>
 
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            color: #fff;
-            background: linear-gradient(135deg, var(--bg-dark), #000);
-        }
-
-        header {
-            padding: 2.5rem;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.35);
-            backdrop-filter: blur(6px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        header h1 {
-            font-size: 2.6rem;
-            margin: 0;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        header p {
-            margin: 0.3rem 0;
-            color: #cfd8dc;
-        }
-
-        header a {
-            color: var(--gold);
-            font-weight: bold;
-        }
-
-        .logo-wrapper {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
-
-        .logo-wrapper img {
-            width: 130px;
-            border-radius: 50%;
-            border: 3px solid var(--gold);
-        }
-
-        .section {
-            max-width: 1100px;
-            margin: auto;
-            padding: 3rem 1.5rem;
-        }
-
-        h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-            color: var(--gold);
-            text-shadow: 0 0 8px rgba(229, 200, 122, 0.4);
-        }
-
-        /* PROJECT CARDS */
-        .projects {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .project-card {
-            background: var(--card-bg);
-            padding: 1.8rem;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            transition: 0.3s;
-            backdrop-filter: blur(4px);
-        }
-
-        .project-card:hover {
-            transform: translateY(-7px);
-            border-color: var(--gold);
-            box-shadow: 0 0 20px rgba(229, 200, 122, 0.3);
-        }
-
-        .project-card h3 {
-            margin-top: 0;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .project-card a {
-            color: var(--gold);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        /* SKILLS */
-        .skills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .skill {
-            background: var(--card-bg);
-            padding: 0.7rem 1rem;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #d7d7d7;
-        }
-
-        /* FOOTER */
-        footer {
-            text-align: center;
-            padding: 2rem;
-            background: rgba(0, 0, 0, 0.4);
-            margin-top: 2rem;
-            color: #bbb;
-            font-size: 0.9rem;
-            backdrop-filter: blur(4px);
-        }
-
-        /* Animations */
-        .project-card {
-            opacity: 0;
-            transform: translateY(15px);
-            animation: fadeUp 0.6s ease forwards;
-        }
-
-        .project-card:nth-child(2) {
-            animation-delay: 0.15s;
-        }
-
-        @keyframes fadeUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <header>
-        <div class="logo-wrapper">
-            <img src="./images/kenneth.jpg" alt="Logo" />
-        </div>
-
-        <h1>Kenneth Asael Duron Paz</h1>
-        <p>Web Frontend Developer • San Pedro Sula, Honduras</p>
-        <p>Email: <strong>kennethduron.paz@gmail.com</strong> | Phone: <strong>+504 9301-4381</strong></p>
-        <p><a href="https://www.linkedin.com/in/kenneth-asael-duron-paz-5824b32b5/" target="_blank">LinkedIn</a></p>
+    <!-- Header / Navigation -->
+    <header class="header">
+        <nav class="nav" aria-label="Main navigation">
+            <a href="#home" class="brand">Kenneth Duron</a>
+            <button class="burger" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links">
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#education">Education</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="https://www.linkedin.com/in/kenneth-asael-durón-paz-5824b32b5" target="_blank"
+                        rel="noopener" class="linkedin-btn">LinkedIn</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <section class="section">
-        <h2>Projects</h2>
-        <div class="projects">
-
-            <div class="project-card">
-                <h3>Haru Logistics Group</h3>
-                <p>A professional business site showcasing logistics solutions with a fully responsive design.</p>
-                <a href="https://kennethduron.github.io/haru_logistics_group/" target="_blank">Visit Project →</a>
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-text">
+            <h1>Hi, I’m <span class="highlight">Kenneth Duron</span></h1>
+            <p>Web Frontend Developer creating responsive, user-friendly, and SEO-optimized web experiences.</p>
+            <div class="hero-buttons">
+                <a href="#contact" class="btn-hire">Hire Me</a>
+                <a href="https://www.linkedin.com/in/kenneth-asael-durón-paz-5824b32b5" target="_blank" rel="noopener"
+                    class="btn-linkedin">LinkedIn</a>
             </div>
-
-            <div class="project-card">
-                <h3>KADSA Jewelry Website</h3>
-                <p>A jewelry e-commerce concept featuring elegant UI and product gallery components.</p>
-                <a href="https://kennethmarjorie8.github.io/KADSA/" target="_blank">Visit Project →</a>
-            </div>
-
-            <div class="project-card">
-                <h3>Legal Services</h3>
-                <p>A modern, responsive website designed for a legal services firm, focused on professionalism, trust,
-                    and clear client communication.</p>
-                <a href="https://kennethduron.github.io/servicios-legales/" target="_blank">Visit Project →</a>
-            </div>
-
+        </div>
+        <div class="hero-image">
+            <img src="images/kenneth.jpg" alt="Kenneth Duron — Frontend Developer" class="small-hero">
         </div>
     </section>
 
-    <section class="section">
-        <h2>Experience</h2>
-        <p><strong>Customer Service Representative – Alorica (AcariaHealth)</strong><br> Supported 50+ patients daily,
-            processed insurance approvals, coordinated deliveries, and ensured accurate communication.</p>
+    <!-- Projects Section -->
+    <section id="projects" class="section projects">
+        <h2>Featured Projects</h2>
+        <div class="projects-grid">
+            <article class="project-card">
+                <img src="images/project-haru.png" alt="Haru Logistics Group website">
+                <div class="project-info">
+                    <h3>Haru Logistics Group</h3>
+                    <p>Responsive business website for logistics with modern UI and clear user journeys.</p>
+                    <a href="https://kennethduron.github.io/haru_logistics_group/" target="_blank" rel="noopener">View
+                        Project →</a>
+                </div>
+            </article>
 
-        <p><strong>Customer Support – IntouchCX (Hyundai Capital America)</strong><br> Managed 70+ calls daily,
-            resolved financial issues, processed payments, and solved customer queries efficiently.</p>
+            <article class="project-card">
+                <img src="images/project-kadsa.png" alt="KADSA Jewelry website">
+                <div class="project-info">
+                    <h3>KADSA Jewelry Website</h3>
+                    <p>Jewelry e-commerce concept with elegant UI, product highlights, and intuitive navigation.</p>
+                    <a href="https://kennethmarjorie8.github.io/KADSA/" target="_blank" rel="noopener">View Project
+                        →</a>
+                </div>
+            </article>
 
-        <p><strong>Customer Support – Collective Solutions (Gen Mobile)</strong><br> Assisted multiple projects,
-            troubleshooted 70+ devices per day, and contributed to marketing and tech solutions.</p>
-
-        <p><strong>Customer Service Representative – Avícola Central</strong><br> Managed 3000+ product inventory,
-            supported customers, and maintained detailed service documentation.</p>
-
-        <p><strong>Electrical Technician – BOMOHSA</strong><br> Designed electrical panels, tested machinery,
-            and performed electromechanical repairs.</p>
+            <article class="project-card">
+                <img src="images/project-legal.png" alt="Servicios Legales website">
+                <div class="project-info">
+                    <h3>Legal Services</h3>
+                    <p>Professional legal website emphasizing trust, structure, and easy access to services.</p>
+                    <a href="https://kennethduron.github.io/servicios-legales/" target="_blank" rel="noopener">View
+                        Project →</a>
+                </div>
+            </article>
+        </div>
     </section>
 
-    <section class="section">
+    <!-- About Section -->
+    <section id="about" class="section about">
+        <h2>About Me</h2>
+        <p>
+            I’m a Web Frontend Developer from Honduras, skilled in HTML, CSS, JavaScript, and UI/UX principles. I create
+            clean, responsive websites that solve problems for users and businesses.
+        </p>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="section experience">
+        <h2>Work Experience</h2>
+        <div class="timeline-container">
+            <div class="timeline-item">
+                <h3>Customer Service Representative | Alorica (AcariaHealth)</h3>
+                <span>San Pedro Sula, Honduras — Aug 2025 – Present</span>
+                <p>Supported 50+ patients daily, managed insurance approvals, coordinated medication delivery, and
+                    processed copay assistance.</p>
+            </div>
+
+            <div class="timeline-item">
+                <h3>Customer Support | IntouchCX (Hyundai Capital America)</h3>
+                <span>San Pedro Sula, Honduras — Jan 2025 – Aug 2025</span>
+                <p>Managed 70+ daily customer calls, provided contract support, troubleshooting, and processed payments
+                    accurately.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education" class="section education">
+        <h2>Education</h2>
+        <div class="timeline-container">
+            <div class="timeline-item">
+                <h3>Brigham Young University Pathway</h3>
+                <span>Software Development — Utah, USA, March 2025 – Present</span>
+            </div>
+            <div class="timeline-item">
+                <h3>Cumorah Academy</h3>
+                <span>Leadership & Coding Bootcamp — Czech Republic, Sept 2024 – Dec 2024</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="section skills">
         <h2>Skills</h2>
-        <div class="skills">
-            <div class="skill">HTML</div>
-            <div class="skill">CSS</div>
-            <div class="skill">JavaScript</div>
-            <div class="skill">Illustration & Design</div>
-            <div class="skill">Microsoft Office</div>
-            <div class="skill">English (High Level)</div>
-            <div class="skill">Creativity</div>
-            <div class="skill">Communication</div>
-            <div class="skill">Leadership</div>
-            <div class="skill">Problem Solving</div>
+        <div class="skills-container">
+            <div>
+                <h3>Hard Skills</h3>
+                <p>HTML, CSS, JavaScript, Python, C#, Illustration & Character Design, Content Development, Microsoft
+                    Office, Native Spanish & High-level English</p>
+            </div>
+            <div>
+                <h3>Soft Skills</h3>
+                <p>Creativity, Empathy, Resourcefulness, Adaptability, Communication, Storytelling, Public Speaking,
+                    Work Ethic, Teamwork, Leadership, Conflict Resolution & Problem Solving</p>
+            </div>
         </div>
     </section>
 
-    <footer>
-        © 2025 Kenneth Duron. All rights reserved.
+    <!-- Contact Section -->
+    <section id="contact" class="section contact">
+        <h2>Contact</h2>
+        <p>Interested in working together or want to know more? Let’s talk!</p>
+        <div class="hero-buttons">
+            <a href="mailto:kennethduron.paz@gmail.com" class="btn-hire">Email Me</a>
+            <a href="https://www.linkedin.com/in/kenneth-asael-durón-paz-5824b32b5" target="_blank" rel="noopener"
+                class="btn-linkedin">LinkedIn</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 Kenneth Duron. All rights reserved.</p>
     </footer>
 
+    <!-- JS -->
+    <script src="js/main.js"></script>
 </body>
 
 </html>
