@@ -288,27 +288,28 @@
         });
 
         // Show only this visitor's messages
-        const msgQuery = ref(db, "messages");
-        onChildAdded(msgQuery, (data) => {
+        onChildAdded(ref(db, "messages"), (data) => {
+
             const msg = data.val();
 
-            // Only show your messages and admin messages sent to you
-            if (msg.role === "client" && msg.visitorID !== visitorID) return;
-            if (msg.role === "admin" && msg.visitorID !== visitorID) return;
+            // show ONLY this visitor conversation
+            if (msg.visitorID !== visitorID) return;
 
             const div = document.createElement("div");
 
-            if (msg.role === "client" && msg.visitorID === visitorID) {
-                div.classList.add("my-msg"); // messages sent by THIS visitor
+            if (msg.role === "client") {
+                div.classList.add("my-msg");
             } else {
-                div.classList.add("other-msg"); // admin or other side
+                div.classList.add("other-msg");
             }
 
-
             div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
+
             chatMessages.appendChild(div);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+
         });
+
     </script>
 
 
