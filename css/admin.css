@@ -21,7 +21,7 @@ body {
     display: flex;
     background: var(--bg);
     color: var(--text);
-    height: 100vh;
+    min-height: 100vh;
 }
 
 /* SIDEBAR */
@@ -158,5 +158,9 @@ body {
     .admin-main {
         margin-left: 0;
         padding: 20px;
+    }
+
+    .cards-grid {
+        flex-direction: column;
     }
 }

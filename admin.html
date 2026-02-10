@@ -5,10 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Kenneth Duron</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- CSS -->
     <link rel="stylesheet" href="css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -17,7 +15,6 @@
     <div class="sidebar">
         <h2>Admin Panel</h2>
         <a href="#dashboard">Dashboard</a>
-        <a href="#users">Users</a>
         <a href="#messages">Messages</a>
         <a href="#settings">Settings</a>
         <a href="#logout">Logout</a>
@@ -29,27 +26,27 @@
 
         <!-- Cards -->
         <div class="cards-grid">
-            <div class="card">Total Users: 124</div>
-            <div class="card">Active Chats: <span id="active-chats">0</span></div>
-            <div class="card">Pending Tickets: 3</div>
+            <div class="card">Active Visitors: <span id="active-visitors">0</span></div>
+            <div class="card">Total Messages: <span id="total-messages">0</span></div>
         </div>
 
         <!-- Chat Panel -->
         <div class="chat-panel">
             <div id="chatbox"></div>
             <div class="chat-input-area">
-                <input type="text" id="name" placeholder="Your name">
-                <input type="text" id="message" placeholder="Type your message...">
-                <button onclick="sendMessage()">Send</button>
+                <input type="text" id="admin-name" placeholder="Your name (Admin)">
+                <input type="text" id="admin-message" placeholder="Type your message...">
+                <button id="send-btn">Send</button>
             </div>
         </div>
     </div>
 
-    <!-- ===== FIREBASE ===== -->
+    <!-- ===== FIREBASE & JS ===== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyCq1Su-S_uafe2NsgXXcrlx5P6GQYMVSaM",
             authDomain: "kenneth-live-chat.firebaseapp.com",
@@ -63,37 +60,41 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // Elements
         const chatbox = document.getElementById("chatbox");
-        const activeChatsElem = document.getElementById("active-chats");
+        const activeVisitorsElem = document.getElementById("active-visitors");
+        const totalMessagesElem = document.getElementById("total-messages");
+        const adminName = document.getElementById("admin-name");
+        const adminMessage = document.getElementById("admin-message");
+        const sendBtn = document.getElementById("send-btn");
 
-        let activeClients = new Set();
+        let visitorsSet = new Set();
+        let totalMessages = 0;
 
-        /* ========================
-           🔥 RECEIVE MESSAGES
-        ======================== */
+        // Receive messages
         onChildAdded(ref(db, "messages"), (data) => {
             const msg = data.val();
 
-            // Show in chatbox
+            // Create message bubble
             const div = document.createElement("div");
             div.classList.add(msg.role === "admin" ? "admin-msg" : "client-msg");
             div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
             chatbox.appendChild(div);
             chatbox.scrollTop = chatbox.scrollHeight;
 
-            // Track active clients
-            if (msg.role === "client") {
-                activeClients.add(msg.name);
-                activeChatsElem.innerText = activeClients.size;
-            }
+            // Track active visitors
+            if (msg.role === "client") visitorsSet.add(msg.name);
+            activeVisitorsElem.innerText = visitorsSet.size;
+
+            // Count total messages
+            totalMessages += 1;
+            totalMessagesElem.innerText = totalMessages;
         });
 
-        /* ========================
-           🔥 ADMIN SEND MESSAGE
-        ======================== */
-        window.sendMessage = function () {
-            const name = document.getElementById("name").value || "Admin";
-            const message = document.getElementById("message").value;
+        // Send admin message
+        sendBtn.addEventListener("click", () => {
+            const name = adminName.value || "Admin";
+            const message = adminMessage.value.trim();
             if (!message) return;
 
             push(ref(db, "messages"), {
@@ -103,8 +104,8 @@
                 time: Date.now()
             });
 
-            document.getElementById("message").value = "";
-        };
+            adminMessage.value = "";
+        });
     </script>
 
 </body>
