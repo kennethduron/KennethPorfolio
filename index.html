@@ -232,9 +232,9 @@
     <!-- FIREBASE & CHAT JS -->
     <!-- Put this at the bottom of <body> in your portfolio page -->
     <script type="module">
+        // Portfolio chat.js (inside your <script type="module">)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded }
-            from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         // Firebase config
         const firebaseConfig = {
@@ -265,7 +265,7 @@
             localStorage.setItem("visitorID", visitorID);
         }
 
-        // Toggle chat
+        // Toggle chat window
         chatToggle.addEventListener("click", () => {
             chatContainer.classList.toggle("show");
         });
@@ -287,28 +287,26 @@
             chatText.value = "";
         });
 
-        // Show only this visitor's messages
+        // Listen to messages from this visitor and admin replies
         onChildAdded(ref(db, "messages"), (data) => {
-
             const msg = data.val();
 
-            // show ONLY this visitor conversation
+            // Only display messages related to this visitor
             if (msg.visitorID !== visitorID) return;
 
             const div = document.createElement("div");
 
             if (msg.role === "client") {
-                div.classList.add("my-msg");
-            } else {
-                div.classList.add("other-msg");
+                div.classList.add("my-msg"); // your visitor bubble
+            } else if (msg.role === "admin") {
+                div.classList.add("other-msg"); // admin bubble
             }
 
             div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
-
             chatMessages.appendChild(div);
             chatMessages.scrollTop = chatMessages.scrollHeight;
-
         });
+
 
     </script>
 
