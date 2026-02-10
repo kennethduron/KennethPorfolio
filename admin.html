@@ -49,6 +49,7 @@
         import { getDatabase, ref, push, onChildAdded } from
             "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+        // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyCq1Su-S_uafe2NsgXXcrlx5P6GQYMVSaM",
             authDomain: "kenneth-live-chat.firebaseapp.com",
@@ -59,15 +60,16 @@
             appId: "1:971387555476:web:62834def1c088a2242ae81"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // DOM elements
         const visitorList = document.getElementById("visitorList");
         const chatbox = document.getElementById("chatbox");
         const sendBtn = document.getElementById("send-btn");
         const adminMessage = document.getElementById("admin-message");
         const currentVisitor = document.getElementById("currentVisitor");
-
         const burger = document.getElementById("burger");
         const visitorsPanel = document.getElementById("visitorsPanel");
         const overlay = document.getElementById("overlay");
@@ -117,21 +119,35 @@
             });
         }
 
-        /* SEND MESSAGE */
-        sendBtn.onclick = () => {
+        /* SEND MESSAGE FUNCTION */
+        function sendMessage() {
             if (!selectedVisitorID) return alert("Select a visitor first");
-            if (!adminMessage.value.trim()) return;
+
+            const message = adminMessage.value.trim();
+            if (!message) return;
 
             push(ref(db, `conversations/${selectedVisitorID}/messages`), {
                 name: "Admin",
-                message: adminMessage.value,
+                message: message,
                 role: "admin",
                 time: Date.now()
             });
 
             adminMessage.value = "";
-        };
+        }
+
+        /* SEND MESSAGE BUTTON CLICK */
+        sendBtn.addEventListener("click", sendMessage);
+
+        /* SEND MESSAGE ON ENTER KEY */
+        adminMessage.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault(); // prevent default behavior
+                sendMessage();
+            }
+        });
     </script>
+
 
 </body>
 

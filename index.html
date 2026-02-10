@@ -224,26 +224,15 @@
         <div id="chat-header">Live Chat</div>
         <div id="chat-messages"></div>
         <input id="chat-name" placeholder="Your name">
-        <input id="chat-text" placeholder="Type a message">
+        <textarea id="chat-text" placeholder="Type a message" rows="2"></textarea>
         <button id="chat-send">Send</button>
     </div>
 
-
     <!-- FIREBASE & CHAT JS -->
-    <!-- Put this at the bottom of <body> in your portfolio page -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import {
-            getDatabase,
-            ref,
-            push,
-            onChildAdded,
-            set
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        /* =========================
-           FIREBASE CONFIG
-        ========================= */
         const firebaseConfig = {
             apiKey: "AIzaSyCq1Su-S_uafe2NsgXXcrlx5P6GQYMVSaM",
             authDomain: "kenneth-live-chat.firebaseapp.com",
@@ -257,9 +246,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        /* =========================
-           DOM ELEMENTS
-        ========================= */
         const chatToggle = document.getElementById("chat-toggle");
         const chatContainer = document.getElementById("chat-container");
         const chatMessages = document.getElementById("chat-messages");
@@ -267,35 +253,20 @@
         const chatText = document.getElementById("chat-text");
         const chatSend = document.getElementById("chat-send");
 
-        /* =========================
-           VISITOR ID (PERSISTENT)
-        ========================= */
         let visitorID = localStorage.getItem("visitorID");
         if (!visitorID) {
             visitorID = "visitor_" + Date.now();
             localStorage.setItem("visitorID", visitorID);
         }
 
-        /* =========================
-           TOGGLE CHAT
-        ========================= */
         chatToggle.addEventListener("click", () => {
             chatContainer.classList.toggle("show");
         });
 
-        /* =========================
-           SAVE VISITOR INFO (ONCE)
-        ========================= */
         const visitorInfoRef = ref(db, `conversations/${visitorID}/info`);
-        set(visitorInfoRef, {
-            visitorID,
-            lastSeen: Date.now()
-        });
+        set(visitorInfoRef, { visitorID, lastSeen: Date.now() });
 
-        /* =========================
-           SEND MESSAGE
-        ========================= */
-        chatSend.addEventListener("click", () => {
+        function sendMessage() {
             const name = chatName.value.trim() || "Visitor";
             const message = chatText.value.trim();
             if (!message) return;
@@ -309,30 +280,27 @@
             });
 
             chatText.value = "";
+            chatText.focus();
+        }
+
+        chatSend.addEventListener("click", sendMessage);
+
+        chatText.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
         });
 
-        /* =========================
-           LISTEN TO MESSAGES
-        ========================= */
-        onChildAdded(
-            ref(db, `conversations/${visitorID}/messages`),
-            (data) => {
-                const msg = data.val();
-
-                const div = document.createElement("div");
-                div.className = msg.role === "client" ? "my-msg" : "other-msg";
-                div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
-
-                chatMessages.appendChild(div);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-        );
+        onChildAdded(ref(db, `conversations/${visitorID}/messages`), (data) => {
+            const msg = data.val();
+            const div = document.createElement("div");
+            div.className = msg.role === "client" ? "my-msg" : "other-msg";
+            div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message.replace(/\n/g, '<br>')}`;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
     </script>
-
-
-
-
-
 
 
 </body>

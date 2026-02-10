@@ -487,21 +487,41 @@ body.menu-open {
 
 
 .my-msg {
-    background:#2563eb;
-    color:white;
-    padding:10px 14px;
-    border-radius:18px;
-    margin:8px 0;
-    max-width:75%;
-    margin-left:auto;
-    text-align:right;
+    background: #2563eb;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 18px;
+    margin: 8px 0;
+    max-width: 75%;
+    margin-left: auto;
+    text-align: right;
 }
 
 .other-msg {
-    background:#e5e7eb;
-    color:#111;
-    padding:10px 14px;
-    border-radius:18px;
-    margin:8px 0;
-    max-width:75%;
+    background: #e5e7eb;
+    color: #111;
+    padding: 10px 14px;
+    border-radius: 18px;
+    margin: 8px 0;
+    max-width: 75%;
 }
+
+
+#chat-text {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-bottom: 2px solid #ccc; /* straight line at bottom */
+    background: transparent;       /* remove background */
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+    box-sizing: border-box;
+    outline: none;                 /* removes default outline */
+    transition: border-color 0.3s;
+}
+
+#chat-text:focus {
+    border-bottom-color: #2563eb; /* highlight line on focus */
+}
+
