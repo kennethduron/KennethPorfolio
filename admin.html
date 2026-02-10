@@ -58,7 +58,6 @@
         <button onclick="sendLiveMessage()">Send</button>
     </div>
 
-    <!-- Firebase for Live Chat -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -76,20 +75,44 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const chatMessages = document.getElementById("chat-messages");
+        const chatMessages = document.getElementById("chat-messages"); // floating chat
+        const adminChatbox = document.getElementById("chatbox"); // admin panel
 
+        /* ========================
+           🔥 RECEIVE MESSAGES
+        ======================== */
         onChildAdded(ref(db, "messages"), (data) => {
+
             const msg = data.val();
-            const div = document.createElement("div");
-            div.classList.add("chat-bubble", msg.role === "admin" ? "admin" : "client");
-            div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
-            chatMessages.appendChild(div);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Floating Chat
+            if (chatMessages) {
+                const bubble = document.createElement("div");
+                bubble.classList.add("chat-bubble", msg.role === "admin" ? "admin" : "client");
+                bubble.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
+                chatMessages.appendChild(bubble);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // Admin Dashboard Chat
+            if (adminChatbox) {
+                const adminBubble = document.createElement("div");
+                adminBubble.classList.add(msg.role === "admin" ? "admin-msg" : "client-msg");
+                adminBubble.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
+                adminChatbox.appendChild(adminBubble);
+                adminChatbox.scrollTop = adminChatbox.scrollHeight;
+            }
+
         });
 
+        /* ========================
+           🔥 CLIENT SEND MESSAGE
+        ======================== */
         window.sendLiveMessage = function () {
+
             const name = document.getElementById("chat-name").value || "Guest";
             const message = document.getElementById("chat-text").value;
+
             if (!message) return;
 
             push(ref(db, "messages"), {
@@ -100,8 +123,29 @@
             });
 
             document.getElementById("chat-text").value = "";
-        }
+        };
+
+        /* ========================
+           🔥 ADMIN SEND MESSAGE
+        ======================== */
+        window.sendMessage = function () {
+
+            const name = document.getElementById("name").value || "Admin";
+            const message = document.getElementById("message").value;
+
+            if (!message) return;
+
+            push(ref(db, "messages"), {
+                name,
+                message,
+                role: "admin",
+                time: Date.now()
+            });
+
+            document.getElementById("message").value = "";
+        };
     </script>
+
 
     <!-- JS -->
     <script src="js/main.js"></script>
