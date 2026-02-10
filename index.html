@@ -233,9 +233,9 @@
     <!-- Put this at the bottom of <body> in your portfolio page -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        // === FIREBASE CONFIG ===
+        // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyCq1Su-S_uafe2NsgXXcrlx5P6GQYMVSaM",
             authDomain: "kenneth-live-chat.firebaseapp.com",
@@ -249,7 +249,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // === DOM ELEMENTS ===
+        // DOM elements
         const chatToggle = document.getElementById("chat-toggle");
         const chatContainer = document.getElementById("chat-container");
         const chatMessages = document.getElementById("chat-messages");
@@ -257,15 +257,19 @@
         const chatText = document.getElementById("chat-text");
         const chatSend = document.getElementById("chat-send");
 
-        // === VISITOR ID (unique per session) ===
-        let visitorID = 'visitor_' + Date.now();
+        // Persistent visitor ID
+        let visitorID = localStorage.getItem("visitorID");
+        if (!visitorID) {
+            visitorID = 'visitor_' + Date.now();
+            localStorage.setItem("visitorID", visitorID);
+        }
 
-        // === TOGGLE CHAT WINDOW ===
+        // Toggle chat
         chatToggle.addEventListener("click", () => {
             chatContainer.classList.toggle("show");
         });
 
-        // === SEND MESSAGE ===
+        // Send message
         chatSend.addEventListener("click", () => {
             const name = chatName.value.trim() || "Visitor";
             const message = chatText.value.trim();
@@ -282,20 +286,21 @@
             chatText.value = "";
         });
 
-        // === SHOW ONLY THIS VISITOR'S MESSAGES ===
-        onChildAdded(ref(db, "messages"), (data) => {
+        // Show only this visitor's messages
+        const msgQuery = query(ref(db, "messages"), orderByChild("visitorID"));
+        onChildAdded(msgQuery, (data) => {
             const msg = data.val();
 
-            // show messages only for this visitor or admin messages
-            if (msg.visitorID !== visitorID && msg.role === "client") return;
+            // Only show your messages and admin messages sent to you
+            if (msg.role === "client" && msg.visitorID !== visitorID) return;
+            if (msg.role === "admin" && msg.visitorID !== visitorID) return;
 
             const div = document.createElement("div");
-            div.classList.add("chat-bubble", msg.role === "admin" ? "admin" : "client");
+            div.classList.add(msg.role === "admin" ? "admin" : "client");
             div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
             chatMessages.appendChild(div);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         });
-
     </script>
 
 

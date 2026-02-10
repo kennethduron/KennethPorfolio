@@ -6,33 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Kenneth Duron</title>
     <meta name="description"
-        content="Admin dashboard for Kenneth Duron's live chat system. Monitor messages, interact with visitors in real-time, and manage your website efficiently.">
+        content="Admin dashboard for Kenneth Duron's live chat system. Monitor messages, interact with visitors in real-time.">
     <link rel="stylesheet" href="css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-
     <div class="sidebar">
         <h2>Admin Panel</h2>
         <a href="#">Dashboard</a>
-        <a href="#">Messages</a>
+        <a href="#messages-section">Messages</a>
         <a href="#">Settings</a>
     </div>
 
     <div class="admin-main">
-        <h1>Live Chat Dashboard</h1>
+        <header>
+            <h1>Live Chat Dashboard</h1>
+            <p>Monitor and respond to your visitors in real-time</p>
+        </header>
 
         <div class="cards-grid">
             <div class="card">Active Visitors: <span id="active-visitors">0</span></div>
             <div class="card">Total Messages: <span id="total-messages">0</span></div>
         </div>
 
-        <div class="chat-container">
-            <div class="visitor-list">
-                <h3>Visitors</h3>
-                <ul id="visitors"></ul>
-            </div>
-
+        <section id="messages-section" class="chat-section">
+            <h2>Messages</h2>
             <div class="chat-panel">
                 <div id="chatbox"></div>
                 <div class="chat-input-area">
@@ -41,10 +40,10 @@
                     <button id="send-btn">Send</button>
                 </div>
             </div>
-        </div>
-
+        </section>
     </div>
 
+    <!-- Firebase & JS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -62,83 +61,35 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // DOM elements
         const chatbox = document.getElementById("chatbox");
         const adminName = document.getElementById("admin-name");
         const adminMessage = document.getElementById("admin-message");
         const sendBtn = document.getElementById("send-btn");
         const activeVisitorsElem = document.getElementById("active-visitors");
         const totalMessagesElem = document.getElementById("total-messages");
-        const visitorsList = document.getElementById("visitors");
 
         let visitorsSet = new Set();
         let totalMessages = 0;
-        let selectedVisitorID = null; // Current visitor chat
 
-        const visitorMessages = {}; // Store messages per visitor
-
-        // === Load all messages from Firebase ===
+        // Show all messages
         onChildAdded(ref(db, "messages"), (data) => {
             const msg = data.val();
+            const div = document.createElement("div");
+            div.classList.add(msg.role === "admin" ? "admin-msg" : "client-msg");
+            div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
+            chatbox.appendChild(div);
+            chatbox.scrollTop = chatbox.scrollHeight;
 
-            // Track active visitors
-            if (msg.role === "client") {
-                visitorsSet.add(msg.visitorID);
-
-                if (!visitorMessages[msg.visitorID]) visitorMessages[msg.visitorID] = [];
-                visitorMessages[msg.visitorID].push(msg);
-
-                updateVisitorList();
-            }
-
-            // If a visitor is selected, show their messages
-            if (selectedVisitorID === msg.visitorID || msg.role === "admin") {
-                if (!selectedVisitorID && msg.role === "admin") return; // skip admin messages if no visitor selected
-                displayMessages(selectedVisitorID);
-            }
+            if (msg.role === "client") visitorsSet.add(msg.visitorID);
+            activeVisitorsElem.innerText = visitorsSet.size;
 
             totalMessages += 1;
             totalMessagesElem.innerText = totalMessages;
         });
 
-        // === Display visitor list ===
-        function updateVisitorList() {
-            visitorsList.innerHTML = "";
-            visitorsSet.forEach(visitorID => {
-                const li = document.createElement("li");
-                li.textContent = visitorID;
-                li.classList.toggle("active", visitorID === selectedVisitorID);
-                li.addEventListener("click", () => {
-                    selectedVisitorID = visitorID;
-                    displayMessages(visitorID);
-                    updateVisitorList();
-                });
-                visitorsList.appendChild(li);
-            });
-            activeVisitorsElem.innerText = visitorsSet.size;
-        }
-
-        // === Display messages for selected visitor ===
-        function displayMessages(visitorID) {
-            chatbox.innerHTML = "";
-            if (!visitorID || !visitorMessages[visitorID]) return;
-
-            visitorMessages[visitorID].forEach(msg => {
-                const div = document.createElement("div");
-                div.classList.add(msg.role === "admin" ? "admin-msg" : "client-msg");
-                div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
-                chatbox.appendChild(div);
-            });
-
-            chatbox.scrollTop = chatbox.scrollHeight;
-        }
-
-        // === Send message as Admin ===
+        // Send admin message
         sendBtn.addEventListener("click", () => {
-            if (!selectedVisitorID) {
-                alert("Please select a visitor to chat with.");
-                return;
-            }
-
             const name = adminName.value.trim() || "Admin";
             const message = adminMessage.value.trim();
             if (!message) return;
@@ -147,24 +98,12 @@
                 name,
                 message,
                 role: "admin",
-                visitorID: selectedVisitorID,
                 time: Date.now()
             });
 
-            // Add message to local cache
-            visitorMessages[selectedVisitorID].push({
-                name,
-                message,
-                role: "admin",
-                visitorID: selectedVisitorID,
-                time: Date.now()
-            });
-
-            displayMessages(selectedVisitorID);
             adminMessage.value = "";
         });
     </script>
-
 </body>
 
 </html>
