@@ -232,11 +232,18 @@
     <!-- FIREBASE & CHAT JS -->
     <!-- Put this at the bottom of <body> in your portfolio page -->
     <script type="module">
-        // Portfolio chat.js (inside your <script type="module">)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import {
+            getDatabase,
+            ref,
+            push,
+            onChildAdded,
+            set
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        // Firebase config
+        /* =========================
+           FIREBASE CONFIG
+        ========================= */
         const firebaseConfig = {
             apiKey: "AIzaSyCq1Su-S_uafe2NsgXXcrlx5P6GQYMVSaM",
             authDomain: "kenneth-live-chat.firebaseapp.com",
@@ -250,7 +257,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // DOM elements
+        /* =========================
+           DOM ELEMENTS
+        ========================= */
         const chatToggle = document.getElementById("chat-toggle");
         const chatContainer = document.getElementById("chat-container");
         const chatMessages = document.getElementById("chat-messages");
@@ -258,25 +267,40 @@
         const chatText = document.getElementById("chat-text");
         const chatSend = document.getElementById("chat-send");
 
-        // Persistent visitor ID
+        /* =========================
+           VISITOR ID (PERSISTENT)
+        ========================= */
         let visitorID = localStorage.getItem("visitorID");
         if (!visitorID) {
-            visitorID = 'visitor_' + Date.now();
+            visitorID = "visitor_" + Date.now();
             localStorage.setItem("visitorID", visitorID);
         }
 
-        // Toggle chat window
+        /* =========================
+           TOGGLE CHAT
+        ========================= */
         chatToggle.addEventListener("click", () => {
             chatContainer.classList.toggle("show");
         });
 
-        // Send message
+        /* =========================
+           SAVE VISITOR INFO (ONCE)
+        ========================= */
+        const visitorInfoRef = ref(db, `conversations/${visitorID}/info`);
+        set(visitorInfoRef, {
+            visitorID,
+            lastSeen: Date.now()
+        });
+
+        /* =========================
+           SEND MESSAGE
+        ========================= */
         chatSend.addEventListener("click", () => {
             const name = chatName.value.trim() || "Visitor";
             const message = chatText.value.trim();
             if (!message) return;
 
-            push(ref(db, "messages"), {
+            push(ref(db, `conversations/${visitorID}/messages`), {
                 name,
                 message,
                 role: "client",
@@ -287,29 +311,24 @@
             chatText.value = "";
         });
 
-        // Listen to messages from this visitor and admin replies
-        onChildAdded(ref(db, "messages"), (data) => {
-            const msg = data.val();
+        /* =========================
+           LISTEN TO MESSAGES
+        ========================= */
+        onChildAdded(
+            ref(db, `conversations/${visitorID}/messages`),
+            (data) => {
+                const msg = data.val();
 
-            // Only show messages related to THIS visitor
-            if (msg.visitorID !== visitorID) return;
+                const div = document.createElement("div");
+                div.className = msg.role === "client" ? "my-msg" : "other-msg";
+                div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
 
-            const div = document.createElement("div");
-
-            if (msg.role === "client") {
-                div.classList.add("my-msg"); // visitor message
-            } else if (msg.role === "admin") {
-                div.classList.add("other-msg"); // admin reply
+                chatMessages.appendChild(div);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
-
-            div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
-            chatMessages.appendChild(div);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        });
-
-
-
+        );
     </script>
+
 
 
 

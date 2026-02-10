@@ -2,62 +2,54 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Admin Dashboard | Kenneth Duron</title>
+    <title>Admin Chat Dashboard | Kenneth Duron</title>
+    <meta name="description" content="Professional admin dashboard to manage live chat conversations in real time." />
 
-    <meta name="description"
-        content="Admin dashboard for Kenneth Duron's live chat system. Monitor messages and respond to visitors in real time.">
-
-    <link rel="stylesheet" href="css/admin.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="css/admin.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-    <div class="sidebar">
-        <h2>Admin Panel</h2>
-        <a href="#">Dashboard</a>
-        <a href="#messages-section">Messages</a>
-        <a href="#">Settings</a>
-    </div>
+    <div class="admin-layout">
 
-    <div class="admin-main">
+        <!-- VISITORS SIDEBAR -->
+        <aside class="visitors-panel">
+            <div class="panel-header">Visitors</div>
+            <ul id="visitorList" class="visitor-list"></ul>
+        </aside>
 
-        <header>
-            <h1>Live Chat Dashboard</h1>
-            <p>Monitor and respond to your visitors in real-time</p>
-        </header>
+        <!-- CHAT MAIN -->
+        <main class="chat-panel">
 
-        <div class="cards-grid">
-            <div class="card">Active Visitors: <span id="active-visitors">0</span></div>
-            <div class="card">Total Messages: <span id="total-messages">0</span></div>
-        </div>
+            <!-- CHAT HEADER -->
+            <header class="chat-header">
+                <span id="currentVisitor">Select a visitor</span>
+            </header>
 
-        <section id="messages-section" class="chat-section">
-            <h2>Messages</h2>
+            <!-- MESSAGES -->
+            <section id="chatbox" class="messages"></section>
 
-            <div class="chat-panel">
-                <div id="chatbox"></div>
+            <!-- INPUT -->
+            <footer class="chat-input">
+                <input type="text" id="admin-message" placeholder="Type your reply…" />
+                <button id="send-btn">Send</button>
+            </footer>
 
-                <div class="chat-input-area">
-                    <input type="text" id="admin-name" placeholder="Admin Name">
-                    <input type="text" id="admin-message" placeholder="Type a message...">
-                    <button id="send-btn">Send</button>
-                </div>
-
-            </div>
-        </section>
+        </main>
 
     </div>
 
+    <!-- =========================
+     FIREBASE LOGIC (UNCHANGED)
+========================= -->
     <script type="module">
-
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded }
-            from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded } from
+            "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCq1Su-S_uafe2NsgXXcrlx5P6GQYMVSaM",
@@ -72,69 +64,57 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        const visitorList = document.getElementById("visitorList");
         const chatbox = document.getElementById("chatbox");
-        const adminName = document.getElementById("admin-name");
-        const adminMessage = document.getElementById("admin-message");
         const sendBtn = document.getElementById("send-btn");
+        const adminMessage = document.getElementById("admin-message");
+        const currentVisitor = document.getElementById("currentVisitor");
 
-        const activeVisitorsElem = document.getElementById("active-visitors");
-        const totalMessagesElem = document.getElementById("total-messages");
+        let selectedVisitorID = null;
 
-        let visitorsSet = new Set();
-        let totalMessages = 0;
-        let currentVisitorID = null;
+        /* LOAD VISITORS */
+        onChildAdded(ref(db, "conversations"), snap => {
+            const visitorID = snap.key;
+            const li = document.createElement("li");
+            li.textContent = visitorID;
 
-        onChildAdded(ref(db, "messages"), (data) => {
-
-            const msg = data.val();
-
-            if (msg.role === "client" && !currentVisitorID) {
-                currentVisitorID = msg.visitorID;
-            }
-
-            visitorsSet.add(msg.visitorID);
-
-
-            const div = document.createElement("div");
-
-            div.classList.add(msg.role === "admin" ? "admin-msg" : "client-msg");
-
-            div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
-
-            chatbox.appendChild(div);
-            chatbox.scrollTop = chatbox.scrollHeight;
-
-            activeVisitorsElem.innerText = visitorsSet.size;
-
-            totalMessages++;
-            totalMessagesElem.innerText = totalMessages;
-
+            li.onclick = () => selectVisitor(visitorID, li);
+            visitorList.appendChild(li);
         });
 
-        sendBtn.addEventListener("click", () => {
+        function selectVisitor(id, el) {
+            selectedVisitorID = id;
+            currentVisitor.textContent = id;
+            chatbox.innerHTML = "";
 
-            const name = adminName.value.trim() || "Admin";
-            const message = adminMessage.value.trim();
+            document.querySelectorAll(".visitor-list li")
+                .forEach(v => v.classList.remove("active"));
+            el.classList.add("active");
 
-            if (!message) return;
+            onChildAdded(ref(db, `conversations/${id}/messages`), snap => {
+                const msg = snap.val();
+                const div = document.createElement("div");
+                div.className = msg.role === "admin" ? "msg admin" : "msg client";
+                div.innerHTML = `<strong>${msg.name}</strong><span>${msg.message}</span>`;
+                chatbox.appendChild(div);
+                chatbox.scrollTop = chatbox.scrollHeight;
+            });
+        }
 
-            if (!currentVisitorID) {
-                alert("No visitor selected yet.");
-                return;
-            }
+        /* SEND MESSAGE */
+        sendBtn.onclick = () => {
+            if (!selectedVisitorID) return alert("Select a visitor first");
+            if (!adminMessage.value.trim()) return;
 
-            push(ref(db, "messages"), {
-                name,
-                message,
+            push(ref(db, `conversations/${selectedVisitorID}/messages`), {
+                name: "Admin",
+                message: adminMessage.value,
                 role: "admin",
-                visitorID: currentVisitorID,
                 time: Date.now()
             });
 
             adminMessage.value = "";
-
-        });
-
+        };
     </script>
 
 </body>
