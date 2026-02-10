@@ -230,15 +230,12 @@
     </div>
 
 
-    <script type="module">
+    </style>
 
+    <!-- FIREBASE JS -->
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import {
-            getDatabase,
-            ref,
-            push,
-            onChildAdded
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCq1Su-S_uafe2NsgXXcrlx5P6GQYMVSaM",
@@ -253,43 +250,37 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const chatMessages = document.getElementById("chat-messages");
+        const chatbox = document.getElementById("portfolio-chatbox");
 
+        /* ========================
+           🔥 RECEIVE ALL MESSAGES
+        ======================== */
         onChildAdded(ref(db, "messages"), (data) => {
             const msg = data.val();
             const div = document.createElement("div");
-            div.classList.add("chat-bubble");
-
-            if (msg.role === "admin") {
-                div.classList.add("admin");
-            } else {
-                div.classList.add("client");
-            }
-
-            div.innerText = msg.name + ": " + msg.message;
-            chatMessages.appendChild(div);
-
+            div.classList.add(msg.role === "admin" ? "admin-msg" : "visitor-msg");
+            div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
+            chatbox.appendChild(div);
+            chatbox.scrollTop = chatbox.scrollHeight;
         });
 
-        window.sendMessage = function () {
-
-            const name = document.getElementById("chat-name").value || "Guest";
-            const message = document.getElementById("chat-text").value;
-
+        /* ========================
+           🔥 SEND VISITOR MESSAGE
+        ======================== */
+        window.sendVisitorMessage = function () {
+            const name = document.getElementById("visitor-name").value || "Visitor";
+            const message = document.getElementById("visitor-message").value;
             if (!message) return;
 
             push(ref(db, "messages"), {
-                name: name,
-                message: message,
+                name,
+                message,
                 role: "client",
                 time: Date.now()
             });
 
-            document.getElementById("chat-text").value = "";
+            document.getElementById("visitor-message").value = "";
         };
-
-
-
     </script>
 
 

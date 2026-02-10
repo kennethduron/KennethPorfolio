@@ -5,10 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Kenneth Duron</title>
-
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     <!-- CSS -->
     <link rel="stylesheet" href="css/admin.css">
 </head>
@@ -32,7 +30,7 @@
         <!-- Cards -->
         <div class="cards-grid">
             <div class="card">Total Users: 124</div>
-            <div class="card">Active Chats: 8</div>
+            <div class="card">Active Chats: <span id="active-chats">0</span></div>
             <div class="card">Pending Tickets: 3</div>
         </div>
 
@@ -47,17 +45,7 @@
         </div>
     </div>
 
-    <!-- ===== FLOATING LIVE CHAT ===== -->
-    <div id="chat-toggle">💬</div>
-
-    <div id="chat-container">
-        <div id="chat-header">Live Support</div>
-        <div id="chat-messages"></div>
-        <input id="chat-name" placeholder="Your name">
-        <input id="chat-text" placeholder="Type a message...">
-        <button onclick="sendLiveMessage()">Send</button>
-    </div>
-
+    <!-- ===== FIREBASE ===== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -75,64 +63,37 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const chatMessages = document.getElementById("chat-messages"); // floating chat
-        const adminChatbox = document.getElementById("chatbox"); // admin panel
+        const chatbox = document.getElementById("chatbox");
+        const activeChatsElem = document.getElementById("active-chats");
+
+        let activeClients = new Set();
 
         /* ========================
            🔥 RECEIVE MESSAGES
         ======================== */
         onChildAdded(ref(db, "messages"), (data) => {
-
             const msg = data.val();
 
-            // Floating Chat
-            if (chatMessages) {
-                const bubble = document.createElement("div");
-                bubble.classList.add("chat-bubble", msg.role === "admin" ? "admin" : "client");
-                bubble.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
-                chatMessages.appendChild(bubble);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
+            // Show in chatbox
+            const div = document.createElement("div");
+            div.classList.add(msg.role === "admin" ? "admin-msg" : "client-msg");
+            div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
+            chatbox.appendChild(div);
+            chatbox.scrollTop = chatbox.scrollHeight;
 
-            // Admin Dashboard Chat
-            if (adminChatbox) {
-                const adminBubble = document.createElement("div");
-                adminBubble.classList.add(msg.role === "admin" ? "admin-msg" : "client-msg");
-                adminBubble.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
-                adminChatbox.appendChild(adminBubble);
-                adminChatbox.scrollTop = adminChatbox.scrollHeight;
+            // Track active clients
+            if (msg.role === "client") {
+                activeClients.add(msg.name);
+                activeChatsElem.innerText = activeClients.size;
             }
-
         });
-
-        /* ========================
-           🔥 CLIENT SEND MESSAGE
-        ======================== */
-        window.sendLiveMessage = function () {
-
-            const name = document.getElementById("chat-name").value || "Guest";
-            const message = document.getElementById("chat-text").value;
-
-            if (!message) return;
-
-            push(ref(db, "messages"), {
-                name,
-                message,
-                role: "client",
-                time: Date.now()
-            });
-
-            document.getElementById("chat-text").value = "";
-        };
 
         /* ========================
            🔥 ADMIN SEND MESSAGE
         ======================== */
         window.sendMessage = function () {
-
             const name = document.getElementById("name").value || "Admin";
             const message = document.getElementById("message").value;
-
             if (!message) return;
 
             push(ref(db, "messages"), {
@@ -145,10 +106,6 @@
             document.getElementById("message").value = "";
         };
     </script>
-
-
-    <!-- JS -->
-    <script src="js/main.js"></script>
 
 </body>
 
