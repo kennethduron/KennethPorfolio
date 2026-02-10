@@ -230,73 +230,73 @@
 
 
     <!-- FIREBASE & CHAT JS -->
+    <!-- Put this at the bottom of <body> in your portfolio page -->
     <script type="module">
-        document.addEventListener("DOMContentLoaded", () => {
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, push, onChildAdded, query, orderByChild } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-            /* CHAT TOGGLE */
-            const chatToggle = document.getElementById("chat-toggle");
-            const chatContainer = document.getElementById("chat-container");
+        // === FIREBASE CONFIG ===
+        const firebaseConfig = {
+            apiKey: "AIzaSyCq1Su-S_uafe2NsgXXcrlx5P6GQYMVSaM",
+            authDomain: "kenneth-live-chat.firebaseapp.com",
+            databaseURL: "https://kenneth-live-chat-default-rtdb.firebaseio.com",
+            projectId: "kenneth-live-chat",
+            storageBucket: "kenneth-live-chat.firebasestorage.app",
+            messagingSenderId: "971387555476",
+            appId: "1:971387555476:web:62834def1c088a2242ae81"
+        };
 
-            chatToggle.addEventListener("click", () => {
-                chatContainer.classList.toggle("show");
-            });
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-            /* FIREBASE CHAT */
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-            import { getDatabase, ref, push, onChildAdded, query, orderByChild } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        // === DOM ELEMENTS ===
+        const chatToggle = document.getElementById("chat-toggle");
+        const chatContainer = document.getElementById("chat-container");
+        const chatMessages = document.getElementById("chat-messages");
+        const chatName = document.getElementById("chat-name");
+        const chatText = document.getElementById("chat-text");
+        const chatSend = document.getElementById("chat-send");
 
-            const firebaseConfig = {
-                apiKey: "AIzaSyCq1Su-S_uafe2NsgXXcrlx5P6GQYMVSaM",
-                authDomain: "kenneth-live-chat.firebaseapp.com",
-                databaseURL: "https://kenneth-live-chat-default-rtdb.firebaseio.com",
-                projectId: "kenneth-live-chat",
-                storageBucket: "kenneth-live-chat.firebasestorage.app",
-                messagingSenderId: "971387555476",
-                appId: "1:971387555476:web:62834def1c088a2242ae81"
-            };
+        // === VISITOR ID ===
+        let visitorID = 'visitor_' + Date.now();
 
-            const app = initializeApp(firebaseConfig);
-            const db = getDatabase(app);
-
-            const chatMessages = document.getElementById("chat-messages");
-            const chatName = document.getElementById("chat-name");
-            const chatText = document.getElementById("chat-text");
-            const chatSend = document.getElementById("chat-send");
-
-            let visitorID = 'visitor_' + Date.now();
-
-            chatSend.addEventListener("click", () => {
-                const name = chatName.value.trim() || "Visitor";
-                const message = chatText.value.trim();
-                if (!message) return;
-
-                push(ref(db, "messages"), {
-                    name,
-                    message,
-                    role: "client",
-                    visitorID,
-                    time: Date.now()
-                });
-
-                chatText.value = "";
-            });
-
-            const msgQuery = query(ref(db, "messages"), orderByChild("visitorID"));
-            onChildAdded(msgQuery, (data) => {
-                const msg = data.val();
-                if (msg.visitorID !== visitorID && msg.role === "client") return;
-
-                const div = document.createElement("div");
-                div.classList.add("chat-bubble", msg.role === "admin" ? "admin" : "client");
-                div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
-                chatMessages.appendChild(div);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            });
-
+        // === CHAT TOGGLE ===
+        chatToggle.addEventListener("click", () => {
+            chatContainer.classList.toggle("show");
         });
 
+        // === SEND MESSAGE ===
+        chatSend.addEventListener("click", () => {
+            const name = chatName.value.trim() || "Visitor";
+            const message = chatText.value.trim();
+            if (!message) return;
 
+            push(ref(db, "messages"), {
+                name,
+                message,
+                role: "client",
+                visitorID,
+                time: Date.now()
+            });
+
+            chatText.value = "";
+        });
+
+        // === DISPLAY MESSAGES ===
+        const msgQuery = query(ref(db, "messages"), orderByChild("visitorID"));
+        onChildAdded(msgQuery, (data) => {
+            const msg = data.val();
+            // Only show your messages (or admin messages)
+            if (msg.visitorID !== visitorID && msg.role === "client") return;
+
+            const div = document.createElement("div");
+            div.classList.add("chat-bubble", msg.role === "admin" ? "admin" : "client");
+            div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
     </script>
+
 
 
 
