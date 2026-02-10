@@ -20,20 +20,29 @@
     </div>
 
     <div class="admin-main">
-        <h1>Dashboard</h1>
+        <h1>Live Chat Dashboard</h1>
+
         <div class="cards-grid">
             <div class="card">Active Visitors: <span id="active-visitors">0</span></div>
             <div class="card">Total Messages: <span id="total-messages">0</span></div>
         </div>
 
-        <div class="chat-panel">
-            <div id="chatbox"></div>
-            <div class="chat-input-area">
-                <input type="text" id="admin-name" placeholder="Admin Name">
-                <input type="text" id="admin-message" placeholder="Type a message...">
-                <button id="send-btn">Send</button>
+        <div class="chat-container">
+            <div class="visitor-list">
+                <h3>Visitors</h3>
+                <ul id="visitors"></ul>
+            </div>
+
+            <div class="chat-panel">
+                <div id="chatbox"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="admin-name" placeholder="Admin Name">
+                    <input type="text" id="admin-message" placeholder="Type a message...">
+                    <button id="send-btn">Send</button>
+                </div>
             </div>
         </div>
+
     </div>
 
     <script type="module">
@@ -59,26 +68,77 @@
         const sendBtn = document.getElementById("send-btn");
         const activeVisitorsElem = document.getElementById("active-visitors");
         const totalMessagesElem = document.getElementById("total-messages");
+        const visitorsList = document.getElementById("visitors");
 
         let visitorsSet = new Set();
         let totalMessages = 0;
+        let selectedVisitorID = null; // Current visitor chat
 
+        const visitorMessages = {}; // Store messages per visitor
+
+        // === Load all messages from Firebase ===
         onChildAdded(ref(db, "messages"), (data) => {
             const msg = data.val();
-            const div = document.createElement("div");
-            div.classList.add(msg.role === "admin" ? "admin-msg" : "client-msg");
-            div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
-            chatbox.appendChild(div);
-            chatbox.scrollTop = chatbox.scrollHeight;
 
-            if (msg.role === "client") visitorsSet.add(msg.visitorID);
-            activeVisitorsElem.innerText = visitorsSet.size;
+            // Track active visitors
+            if (msg.role === "client") {
+                visitorsSet.add(msg.visitorID);
+
+                if (!visitorMessages[msg.visitorID]) visitorMessages[msg.visitorID] = [];
+                visitorMessages[msg.visitorID].push(msg);
+
+                updateVisitorList();
+            }
+
+            // If a visitor is selected, show their messages
+            if (selectedVisitorID === msg.visitorID || msg.role === "admin") {
+                if (!selectedVisitorID && msg.role === "admin") return; // skip admin messages if no visitor selected
+                displayMessages(selectedVisitorID);
+            }
 
             totalMessages += 1;
             totalMessagesElem.innerText = totalMessages;
         });
 
+        // === Display visitor list ===
+        function updateVisitorList() {
+            visitorsList.innerHTML = "";
+            visitorsSet.forEach(visitorID => {
+                const li = document.createElement("li");
+                li.textContent = visitorID;
+                li.classList.toggle("active", visitorID === selectedVisitorID);
+                li.addEventListener("click", () => {
+                    selectedVisitorID = visitorID;
+                    displayMessages(visitorID);
+                    updateVisitorList();
+                });
+                visitorsList.appendChild(li);
+            });
+            activeVisitorsElem.innerText = visitorsSet.size;
+        }
+
+        // === Display messages for selected visitor ===
+        function displayMessages(visitorID) {
+            chatbox.innerHTML = "";
+            if (!visitorID || !visitorMessages[visitorID]) return;
+
+            visitorMessages[visitorID].forEach(msg => {
+                const div = document.createElement("div");
+                div.classList.add(msg.role === "admin" ? "admin-msg" : "client-msg");
+                div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
+                chatbox.appendChild(div);
+            });
+
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        // === Send message as Admin ===
         sendBtn.addEventListener("click", () => {
+            if (!selectedVisitorID) {
+                alert("Please select a visitor to chat with.");
+                return;
+            }
+
             const name = adminName.value.trim() || "Admin";
             const message = adminMessage.value.trim();
             if (!message) return;
@@ -87,9 +147,20 @@
                 name,
                 message,
                 role: "admin",
+                visitorID: selectedVisitorID,
                 time: Date.now()
             });
 
+            // Add message to local cache
+            visitorMessages[selectedVisitorID].push({
+                name,
+                message,
+                role: "admin",
+                visitorID: selectedVisitorID,
+                time: Date.now()
+            });
+
+            displayMessages(selectedVisitorID);
             adminMessage.value = "";
         });
     </script>
