@@ -233,7 +233,8 @@
     <!-- Put this at the bottom of <body> in your portfolio page -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded }
+            from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         // Firebase config
         const firebaseConfig = {
@@ -287,7 +288,7 @@
         });
 
         // Show only this visitor's messages
-        const msgQuery = query(ref(db, "messages"), orderByChild("visitorID"));
+        const msgQuery = ref(db, "messages");
         onChildAdded(msgQuery, (data) => {
             const msg = data.val();
 
