@@ -291,21 +291,22 @@
         onChildAdded(ref(db, "messages"), (data) => {
             const msg = data.val();
 
-            // Only display messages related to this visitor
+            // Only show messages related to THIS visitor
             if (msg.visitorID !== visitorID) return;
 
             const div = document.createElement("div");
 
             if (msg.role === "client") {
-                div.classList.add("my-msg"); // your visitor bubble
+                div.classList.add("my-msg"); // visitor message
             } else if (msg.role === "admin") {
-                div.classList.add("other-msg"); // admin bubble
+                div.classList.add("other-msg"); // admin reply
             }
 
             div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
             chatMessages.appendChild(div);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         });
+
 
 
     </script>
