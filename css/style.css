@@ -354,7 +354,7 @@ body.menu-open {
    💬 PROFESSIONAL LIVE CHAT
 ========================= */
 
-/* Floating Chat Button */
+/* Visitor Chat Button */
 #chat-toggle {
     position: fixed;
     bottom: 25px;
@@ -370,32 +370,37 @@ body.menu-open {
     border-radius: 50%;
     cursor: pointer;
     z-index: 9999;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
+    transition: transform 0.3s;
 }
 
 #chat-toggle:hover {
     transform: scale(1.1);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
 }
 
-/* Chat Container */
+/* Chat Window */
 #chat-container {
     position: fixed;
     bottom: 105px;
     right: 25px;
     width: 320px;
+    max-width: 90%;
     background: white;
     border-radius: 14px;
     box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
     display: none;
+    /* hidden by default */
     flex-direction: column;
     overflow: hidden;
     z-index: 9999;
-    animation: fadeUp 0.3s ease;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
-@keyframes fadeUp {
+/* Show chat window */
+#chat-container.show {
+    display: flex;
+}
+
+@keyframes fadeIn {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -407,17 +412,17 @@ body.menu-open {
     }
 }
 
-/* Header */
+/* Chat Header */
 #chat-header {
     background: #2563eb;
     color: white;
+    text-align: center;
     padding: 12px;
     font-weight: 600;
-    text-align: center;
-    font-size: 15px;
+    font-size: 16px;
 }
 
-/* Messages Area */
+/* Chat Messages */
 #chat-messages {
     height: 230px;
     overflow-y: auto;
@@ -428,7 +433,7 @@ body.menu-open {
     background: #f9fafb;
 }
 
-/* Message Bubbles */
+/* Chat Bubbles */
 .chat-bubble {
     padding: 8px 12px;
     border-radius: 12px;
@@ -437,20 +442,18 @@ body.menu-open {
     word-wrap: break-word;
 }
 
-/* Client Message */
 .client {
     background: #e5e7eb;
     align-self: flex-start;
 }
 
-/* Admin Message */
 .admin {
     background: #2563eb;
     color: white;
     align-self: flex-end;
 }
 
-/* Inputs */
+/* Input Area */
 #chat-container input {
     border: none;
     border-top: 1px solid #eee;
@@ -459,7 +462,6 @@ body.menu-open {
     outline: none;
 }
 
-/* Send Button */
 #chat-container button {
     border: none;
     background: #2563eb;
@@ -474,7 +476,7 @@ body.menu-open {
     background: #1d4ed8;
 }
 
-/* Mobile */
+/* Responsive */
 @media (max-width: 480px) {
     #chat-container {
         width: 90%;

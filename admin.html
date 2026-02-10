@@ -5,48 +5,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Kenneth Duron</title>
+    <meta name="description"
+        content="Admin dashboard for Kenneth Duron's live chat system. Monitor messages, interact with visitors in real-time, and manage your website efficiently.">
     <link rel="stylesheet" href="css/admin.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-    <!-- ===== SIDEBAR ===== -->
     <div class="sidebar">
         <h2>Admin Panel</h2>
-        <a href="#dashboard">Dashboard</a>
-        <a href="#messages">Messages</a>
-        <a href="#settings">Settings</a>
-        <a href="#logout">Logout</a>
+        <a href="#">Dashboard</a>
+        <a href="#">Messages</a>
+        <a href="#">Settings</a>
     </div>
 
-    <!-- ===== MAIN CONTENT ===== -->
     <div class="admin-main">
-        <h1 class="admin-header">Dashboard</h1>
-
-        <!-- Cards -->
+        <h1>Dashboard</h1>
         <div class="cards-grid">
             <div class="card">Active Visitors: <span id="active-visitors">0</span></div>
             <div class="card">Total Messages: <span id="total-messages">0</span></div>
         </div>
 
-        <!-- Chat Panel -->
         <div class="chat-panel">
             <div id="chatbox"></div>
             <div class="chat-input-area">
-                <input type="text" id="admin-name" placeholder="Your name (Admin)">
-                <input type="text" id="admin-message" placeholder="Type your message...">
+                <input type="text" id="admin-name" placeholder="Admin Name">
+                <input type="text" id="admin-message" placeholder="Type a message...">
                 <button id="send-btn">Send</button>
             </div>
         </div>
     </div>
 
-    <!-- ===== FIREBASE & JS ===== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyCq1Su-S_uafe2NsgXXcrlx5P6GQYMVSaM",
             authDomain: "kenneth-live-chat.firebaseapp.com",
@@ -60,40 +53,33 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Elements
         const chatbox = document.getElementById("chatbox");
-        const activeVisitorsElem = document.getElementById("active-visitors");
-        const totalMessagesElem = document.getElementById("total-messages");
         const adminName = document.getElementById("admin-name");
         const adminMessage = document.getElementById("admin-message");
         const sendBtn = document.getElementById("send-btn");
+        const activeVisitorsElem = document.getElementById("active-visitors");
+        const totalMessagesElem = document.getElementById("total-messages");
 
         let visitorsSet = new Set();
         let totalMessages = 0;
 
-        // Receive messages
         onChildAdded(ref(db, "messages"), (data) => {
             const msg = data.val();
-
-            // Create message bubble
             const div = document.createElement("div");
             div.classList.add(msg.role === "admin" ? "admin-msg" : "client-msg");
             div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
             chatbox.appendChild(div);
             chatbox.scrollTop = chatbox.scrollHeight;
 
-            // Track active visitors
-            if (msg.role === "client") visitorsSet.add(msg.name);
+            if (msg.role === "client") visitorsSet.add(msg.visitorID);
             activeVisitorsElem.innerText = visitorsSet.size;
 
-            // Count total messages
             totalMessages += 1;
             totalMessagesElem.innerText = totalMessages;
         });
 
-        // Send admin message
         sendBtn.addEventListener("click", () => {
-            const name = adminName.value || "Admin";
+            const name = adminName.value.trim() || "Admin";
             const message = adminMessage.value.trim();
             if (!message) return;
 
