@@ -297,7 +297,14 @@
             if (msg.role === "admin" && msg.visitorID !== visitorID) return;
 
             const div = document.createElement("div");
-            div.classList.add(msg.role === "admin" ? "admin" : "client");
+            div.classList.add("chat-bubble");
+
+            if (msg.role === "admin") {
+                div.classList.add("admin");
+            } else {
+                div.classList.add("client");
+            }
+
             div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
             chatMessages.appendChild(div);
             chatMessages.scrollTop = chatMessages.scrollHeight;

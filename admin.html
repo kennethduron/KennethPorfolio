@@ -88,10 +88,12 @@
 
             const msg = data.val();
 
-            if (msg.role === "client") {
+            if (msg.role === "client" && !currentVisitorID) {
                 currentVisitorID = msg.visitorID;
-                visitorsSet.add(msg.visitorID);
             }
+
+            visitorsSet.add(msg.visitorID);
+
 
             const div = document.createElement("div");
 

@@ -45,20 +45,4 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    /* CHAT TOGGLE */
-    const chatToggle = document.getElementById("chat-toggle");
-    const chatContainer = document.getElementById("chat-container");
-
-    if (chatToggle && chatContainer) {
-        chatToggle.addEventListener("click", () => {
-
-            if (chatContainer.style.display === "flex") {
-                chatContainer.style.display = "none";
-            } else {
-                chatContainer.style.display = "flex";
-            }
-
-        });
-    }
-
 });
