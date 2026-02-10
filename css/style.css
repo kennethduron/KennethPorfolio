@@ -347,3 +347,137 @@ body {
 body.menu-open {
     overflow: hidden;
 }
+
+
+
+/* =========================
+   💬 PROFESSIONAL LIVE CHAT
+========================= */
+
+/* Floating Chat Button */
+#chat-toggle {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 65px;
+    height: 65px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    font-size: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+#chat-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Chat Container */
+#chat-container {
+    position: fixed;
+    bottom: 105px;
+    right: 25px;
+    width: 320px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 9999;
+    animation: fadeUp 0.3s ease;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header */
+#chat-header {
+    background: #2563eb;
+    color: white;
+    padding: 12px;
+    font-weight: 600;
+    text-align: center;
+    font-size: 15px;
+}
+
+/* Messages Area */
+#chat-messages {
+    height: 230px;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #f9fafb;
+}
+
+/* Message Bubbles */
+.chat-bubble {
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+/* Client Message */
+.client {
+    background: #e5e7eb;
+    align-self: flex-start;
+}
+
+/* Admin Message */
+.admin {
+    background: #2563eb;
+    color: white;
+    align-self: flex-end;
+}
+
+/* Inputs */
+#chat-container input {
+    border: none;
+    border-top: 1px solid #eee;
+    padding: 10px;
+    font-size: 14px;
+    outline: none;
+}
+
+/* Send Button */
+#chat-container button {
+    border: none;
+    background: #2563eb;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+#chat-container button:hover {
+    background: #1d4ed8;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    #chat-container {
+        width: 90%;
+        right: 5%;
+    }
+}

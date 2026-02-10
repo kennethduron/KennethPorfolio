@@ -213,42 +213,87 @@
 
     <!-- JS -->
     <script src="js/main.js"></script>
-</body>
 
 
-<div id="chat-widget">
-    <input id="name" placeholder="Your name">
-    <input id="message" placeholder="Type a message">
-    <button onclick="sendMessage()">Send</button>
-</div>
 
-<script type="module">
+    <!-- FLOAT CHAT BUTTON -->
+    <div id="chat-toggle">💬</div>
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    <!-- CHAT WINDOW -->
+    <div id="chat-container">
+        <div id="chat-header">Live Chat</div>
+        <div id="chat-messages"></div>
 
-    const firebaseConfig = {
-        PASTE_YOURS_HERE
-    };
+        <input id="chat-name" placeholder="Your name">
+        <input id="chat-text" placeholder="Type a message">
+        <button onclick="sendMessage()">Send</button>
+    </div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
 
-    window.sendMessage = function () {
+    <script type="module">
 
-        const name = document.getElementById("name").value;
-        const message = document.getElementById("message").value;
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import {
+            getDatabase,
+            ref,
+            push,
+            onChildAdded
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        push(ref(db, "messages"), {
-            name,
-            message,
-            role: "client",
-            time: Date.now()
+        const firebaseConfig = {
+            apiKey: "AIzaSyCq1Su-S_uafe2NsgXXcrlx5P6GQYMVSaM",
+            authDomain: "kenneth-live-chat.firebaseapp.com",
+            databaseURL: "https://kenneth-live-chat-default-rtdb.firebaseio.com",
+            projectId: "kenneth-live-chat",
+            storageBucket: "kenneth-live-chat.firebasestorage.app",
+            messagingSenderId: "971387555476",
+            appId: "1:971387555476:web:62834def1c088a2242ae81"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const chatMessages = document.getElementById("chat-messages");
+
+        onChildAdded(ref(db, "messages"), (data) => {
+            const msg = data.val();
+            const div = document.createElement("div");
+            div.classList.add("chat-bubble");
+
+            if (msg.role === "admin") {
+                div.classList.add("admin");
+            } else {
+                div.classList.add("client");
+            }
+
+            div.innerText = msg.name + ": " + msg.message;
+            chatMessages.appendChild(div);
+
         });
 
-    };
-</script>
+        window.sendMessage = function () {
+
+            const name = document.getElementById("chat-name").value || "Guest";
+            const message = document.getElementById("chat-text").value;
+
+            if (!message) return;
+
+            push(ref(db, "messages"), {
+                name: name,
+                message: message,
+                role: "client",
+                time: Date.now()
+            });
+
+            document.getElementById("chat-text").value = "";
+        };
 
 
+
+    </script>
+
+
+
+</body>
 
 </html>
