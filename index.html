@@ -286,11 +286,20 @@
         chatSend.addEventListener("click", sendMessage);
 
         chatText.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
+
+            // Detect if device is mobile
+            const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+            if (!isMobile) {
+                // DESKTOP behavior
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
             }
+
         });
+
 
         onChildAdded(ref(db, `conversations/${visitorID}/messages`), (data) => {
             const msg = data.val();

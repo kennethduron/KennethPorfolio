@@ -119,6 +119,11 @@
             });
         }
 
+        function isMobile() {
+            return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+        }
+
+
         /* SEND MESSAGE FUNCTION */
         function sendMessage() {
             if (!selectedVisitorID) return alert("Select a visitor first");
@@ -141,11 +146,21 @@
 
         /* SEND MESSAGE ON ENTER KEY */
         adminMessage.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
-                e.preventDefault(); // prevent default behavior
-                sendMessage();
+
+            // Only enable Enter-to-send on DESKTOP
+            if (!isMobile()) {
+
+                // Enter without Shift → send
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+
+                // Shift + Enter → new line (default behavior)
             }
+
         });
+
     </script>
 
 
