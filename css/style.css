@@ -507,21 +507,27 @@ body.menu-open {
 }
 
 
+/* Name input */
+#chat-name {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    /* soft gray line */
+    outline: none;
+    font-size: 14px;
+}
+
+/* Message textarea */
 #chat-text {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: none;
-    border-bottom: 2px solid #ccc; /* straight line at bottom */
-    background: transparent;       /* remove background */
+    border-top: 1px solid #e5e7eb;
+    /* SAME soft gray line */
+    resize: none;
+    outline: none;
     font-family: inherit;
     font-size: 14px;
     line-height: 1.4;
-    box-sizing: border-box;
-    outline: none;                 /* removes default outline */
-    transition: border-color 0.3s;
 }
-
-#chat-text:focus {
-    border-bottom-color: #2563eb; /* highlight line on focus */
-}
-
