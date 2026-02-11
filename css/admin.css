@@ -5,7 +5,9 @@
     --text: #0f172a;
     --accent: #2563eb;
     --border: #e5e7eb;
-    --shadow: 0 10px 35px rgba(0, 0, 0, .08);
+    --shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+    --online: #22c55e;
+    --offline: #ef4444;
 }
 
 * {
@@ -26,7 +28,7 @@ body {
     height: 100vh;
 }
 
-/* VISITORS */
+/* VISITORS PANEL */
 .visitors-panel {
     width: 300px;
     background: var(--sidebar);
@@ -35,7 +37,7 @@ body {
     flex-direction: column;
 }
 
-/* CHAT */
+/* CHAT PANEL */
 .chat-panel {
     flex: 1;
     display: flex;
@@ -66,7 +68,7 @@ body {
 .panel-header {
     padding: 20px;
     font-weight: 600;
-    border-bottom: 1px solid rgba(255, 255, 255, .1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .visitor-list {
@@ -79,11 +81,29 @@ body {
     padding: 14px;
     border-radius: 10px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .visitor-list li.active,
 .visitor-list li:hover {
     background: var(--accent);
+}
+
+/* ONLINE/OFFLINE DOT */
+.visitor-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.visitor-status-dot.online {
+    background: var(--online);
+}
+
+.visitor-status-dot.offline {
+    background: var(--offline);
 }
 
 /* MESSAGES */
@@ -101,6 +121,7 @@ body {
     max-width: 70%;
     padding: 12px 16px;
     border-radius: 16px;
+    word-wrap: break-word;
 }
 
 .msg.client {
@@ -111,6 +132,13 @@ body {
     background: var(--accent);
     color: white;
     align-self: flex-end;
+}
+
+.msg-time {
+    display: block;
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 4px;
 }
 
 /* INPUT */
@@ -134,6 +162,7 @@ body {
     border: none;
     padding: 14px 22px;
     border-radius: 10px;
+    cursor: pointer;
 }
 
 /* OVERLAY */
@@ -143,7 +172,6 @@ body {
 
 /* MOBILE */
 @media (max-width: 768px) {
-
     .burger {
         display: block;
     }
@@ -155,7 +183,7 @@ body {
         height: 100%;
         width: 280px;
         z-index: 100;
-        transition: .3s;
+        transition: 0.3s;
     }
 
     .visitors-panel.open {
@@ -166,7 +194,7 @@ body {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, .4);
+        background: rgba(0, 0, 0, 0.4);
         z-index: 99;
     }
 
@@ -175,6 +203,7 @@ body {
     }
 }
 
+/* STRONG TAGS IN MESSAGES */
 .msg strong {
     margin-right: 4px;
 }

@@ -27,7 +27,6 @@
 
         <!-- CHAT -->
         <main class="chat-panel">
-
             <header class="chat-header">
                 <button class="burger" id="burger">☰</button>
                 <span id="currentVisitor">Select a visitor</span>
@@ -37,19 +36,17 @@
 
             <footer class="chat-input">
                 <input type="text" id="admin-message" placeholder="Type your reply…" />
-                <button id="send-btn" style="cursor: pointer;">Send</button>
+                <button id="send-btn">Send</button>
             </footer>
-
         </main>
 
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded } from
-            "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        // Firebase config
+        // ------------------ FIREBASE CONFIG ------------------
         const firebaseConfig = {
             apiKey: "AIzaSyCq1Su-S_uafe2NsgXXcrlx5P6GQYMVSaM",
             authDomain: "kenneth-live-chat.firebaseapp.com",
@@ -60,11 +57,11 @@
             appId: "1:971387555476:web:62834def1c088a2242ae81"
         };
 
-        // Initialize Firebase
+        // ------------------ INIT FIREBASE ------------------
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // DOM elements
+        // ------------------ DOM ELEMENTS ------------------
         const visitorList = document.getElementById("visitorList");
         const chatbox = document.getElementById("chatbox");
         const sendBtn = document.getElementById("send-btn");
@@ -76,55 +73,82 @@
 
         let selectedVisitorID = null;
 
-        /* MOBILE MENU */
+        // ------------------ MOBILE MENU ------------------
         burger.onclick = () => {
             visitorsPanel.classList.add("open");
             overlay.classList.add("show");
         };
 
         overlay.onclick = closeMenu;
-
         function closeMenu() {
             visitorsPanel.classList.remove("open");
             overlay.classList.remove("show");
         }
 
-        /* LOAD VISITORS */
+        // ------------------ UTILITY ------------------
+        function isMobile() {
+            return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+        }
+
+        // ------------------ FORMAT DATE + TIME ------------------
+        function formatTimestamp(ms) {
+            const dateObj = new Date(ms);
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const year = dateObj.getFullYear();
+            const hours = String(dateObj.getHours()).padStart(2, '0');
+            const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
+
+        // ------------------ LOAD VISITORS ------------------
         onChildAdded(ref(db, "conversations"), snap => {
             const visitorID = snap.key;
+
             const li = document.createElement("li");
-            li.textContent = visitorID;
+
+            // Visitor text
+            const nameSpan = document.createElement("span");
+            nameSpan.textContent = visitorID;
+
+            // Status dot
+            const statusDot = document.createElement("span");
+            statusDot.classList.add("visitor-status-dot", "online"); // default online
+
+            li.appendChild(nameSpan);
+            li.appendChild(statusDot);
             li.onclick = () => selectVisitor(visitorID, li);
             visitorList.appendChild(li);
         });
 
+        // ------------------ SELECT VISITOR ------------------
         function selectVisitor(id, el) {
             selectedVisitorID = id;
             currentVisitor.textContent = id;
             chatbox.innerHTML = "";
 
-            document.querySelectorAll(".visitor-list li")
-                .forEach(v => v.classList.remove("active"));
+            document.querySelectorAll(".visitor-list li").forEach(v => v.classList.remove("active"));
             el.classList.add("active");
-
             closeMenu();
 
             onChildAdded(ref(db, `conversations/${id}/messages`), snap => {
                 const msg = snap.val();
                 const div = document.createElement("div");
                 div.className = msg.role === "admin" ? "msg admin" : "msg client";
-                div.innerHTML = `<strong>${msg.name}:</strong><span> ${msg.message}</span>`;
+
+                const time = formatTimestamp(msg.time);
+
+                div.innerHTML = `
+            <strong>${msg.name}:</strong>
+            <span>${msg.message}</span>
+            <span class="msg-time" style="font-size:0.7rem; color:#6b7280;">${time}</span>
+        `;
                 chatbox.appendChild(div);
                 chatbox.scrollTop = chatbox.scrollHeight;
             });
         }
 
-        function isMobile() {
-            return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
-        }
-
-
-        /* SEND MESSAGE FUNCTION */
+        // ------------------ SEND MESSAGE ------------------
         function sendMessage() {
             if (!selectedVisitorID) return alert("Select a visitor first");
 
@@ -141,27 +165,19 @@
             adminMessage.value = "";
         }
 
-        /* SEND MESSAGE BUTTON CLICK */
+        // ------------------ EVENTS ------------------
         sendBtn.addEventListener("click", sendMessage);
 
-        /* SEND MESSAGE ON ENTER KEY */
         adminMessage.addEventListener("keydown", (e) => {
-
-            // Only enable Enter-to-send on DESKTOP
             if (!isMobile()) {
-
-                // Enter without Shift → send
                 if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     sendMessage();
                 }
-
-                // Shift + Enter → new line (default behavior)
             }
-
         });
-
     </script>
+
 
 
 </body>

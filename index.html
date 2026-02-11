@@ -221,18 +221,26 @@
 
     <!-- CHAT WINDOW -->
     <div id="chat-container">
-        <div id="chat-header">Live Chat</div>
+        <div id="chat-header">
+            Live Chat <span id="visitor-status">(Offline)</span>
+        </div>
         <div id="chat-messages"></div>
         <input id="chat-name" placeholder="Your name">
         <textarea id="chat-text" placeholder="Type a message" rows="2"></textarea>
         <button id="chat-send">Send</button>
     </div>
 
+
     <!-- FIREBASE & CHAT JS -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import {
+            initializeApp
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import {
+            getDatabase, ref, push, onChildAdded, set, onValue
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+        // ------------------ FIREBASE CONFIG ------------------
         const firebaseConfig = {
             apiKey: "AIzaSyCq1Su-S_uafe2NsgXXcrlx5P6GQYMVSaM",
             authDomain: "kenneth-live-chat.firebaseapp.com",
@@ -246,26 +254,59 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // ------------------ CHAT ELEMENTS ------------------
         const chatToggle = document.getElementById("chat-toggle");
         const chatContainer = document.getElementById("chat-container");
         const chatMessages = document.getElementById("chat-messages");
         const chatName = document.getElementById("chat-name");
         const chatText = document.getElementById("chat-text");
         const chatSend = document.getElementById("chat-send");
+        const visitorStatusSpan = document.getElementById("visitor-status");
 
+        // ------------------ VISITOR ID ------------------
         let visitorID = localStorage.getItem("visitorID");
         if (!visitorID) {
             visitorID = "visitor_" + Date.now();
             localStorage.setItem("visitorID", visitorID);
         }
 
-        chatToggle.addEventListener("click", () => {
-            chatContainer.classList.toggle("show");
+        // ------------------ ONLINE/OFFLINE STATUS ------------------
+        const userStatusDatabaseRef = ref(db, `conversations/${visitorID}/info/status`);
+
+        function setOnlineStatus() {
+            set(userStatusDatabaseRef, { online: true, lastSeen: Date.now() });
+        }
+
+        function setOfflineStatus() {
+            set(userStatusDatabaseRef, { online: false, lastSeen: Date.now() });
+        }
+
+        // Set online when page loads
+        setOnlineStatus();
+
+        // Detect when visitor closes tab
+        window.addEventListener("beforeunload", () => {
+            setOfflineStatus();
         });
 
-        const visitorInfoRef = ref(db, `conversations/${visitorID}/info`);
-        set(visitorInfoRef, { visitorID, lastSeen: Date.now() });
+        // Keep online status updated every 30s
+        setInterval(() => {
+            setOnlineStatus();
+        }, 30000);
 
+        // Listen for status changes to update header
+        onValue(userStatusDatabaseRef, (snapshot) => {
+            const status = snapshot.val();
+            if (status?.online) {
+                visitorStatusSpan.textContent = "(Online)";
+                visitorStatusSpan.style.color = "#4ade80"; // green
+            } else {
+                visitorStatusSpan.textContent = "(Offline)";
+                visitorStatusSpan.style.color = "#f87171"; // red
+            }
+        });
+
+        // ------------------ SEND MESSAGE ------------------
         function sendMessage() {
             const name = chatName.value.trim() || "Visitor";
             const message = chatText.value.trim();
@@ -285,29 +326,42 @@
 
         chatSend.addEventListener("click", sendMessage);
 
+        // Send on Enter (desktop only)
         chatText.addEventListener("keydown", (e) => {
-
-            // Detect if device is mobile
             const isMobile = window.matchMedia("(max-width: 768px)").matches;
-
             if (!isMobile) {
-                // DESKTOP behavior
                 if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     sendMessage();
                 }
             }
-
         });
 
+        // ------------------ FORMAT TIMESTAMP ------------------
+        function formatTimestamp(ms) {
+            const date = new Date(ms);
+            const hours = date.getHours().toString().padStart(2, "0");
+            const minutes = date.getMinutes().toString().padStart(2, "0");
+            const day = date.getDate().toString().padStart(2, "0");
+            const month = (date.getMonth() + 1).toString().padStart(2, "0");
+            const year = date.getFullYear();
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
 
+        // ------------------ RECEIVE MESSAGES ------------------
         onChildAdded(ref(db, `conversations/${visitorID}/messages`), (data) => {
             const msg = data.val();
             const div = document.createElement("div");
             div.className = msg.role === "client" ? "my-msg" : "other-msg";
-            div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message.replace(/\n/g, '<br>')}`;
+            const time = formatTimestamp(msg.time);
+            div.innerHTML = `<strong>${msg.name}:</strong> ${msg.message.replace(/\n/g, '<br>')}<br><span style="font-size:0.7rem; color:#6b7280;">${time}</span>`;
             chatMessages.appendChild(div);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+
+        // ------------------ TOGGLE CHAT ------------------
+        chatToggle.addEventListener("click", () => {
+            chatContainer.classList.toggle("show");
         });
     </script>
 
